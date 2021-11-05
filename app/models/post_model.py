@@ -1,5 +1,6 @@
 from datetime import datetime
 from app.models import db
+from app.models.exception import InvalidKeyError,InvalidValueError, RequiredKeyError
 
 class Post:
     def __init__(self, title: str, author: str, tags: list, content: str):
@@ -20,6 +21,32 @@ class Post:
         post = db.posts.find_one({"id": id})
         del post['_id']
         return post
+    
+    @staticmethod
+    def validate_required(data):
+        keys_data = list(data.keys())
+        model_required = ['title', 'author', 'tags', 'content']
+        if keys_data != model_required:    
+            raise RequiredKeyError(data)
+
+    @staticmethod
+    def validate_value(data):
+        model_value = {
+            "title": str,
+            "author": str,
+            "tags": list,
+            "content": str
+        }
+        for key, value in data.items():
+            if type(value) !=  model_value[key]:
+                raise InvalidValueError(data)
+    
+    @staticmethod
+    def validate_key(data):
+        model_key = ['title', 'author', 'tags', 'content']
+        for key in data.keys():
+            if key not in model_key:
+                raise InvalidKeyError(data)
 
     def generate_id(self):
         try:
@@ -54,5 +81,6 @@ class Post:
     
     @staticmethod
     def post_delete(id):
-        db.posts.find_one_and_delete({"id": id})
-        
+        post = db.posts.find_one_and_delete({"id": id})
+        del post['_id']
+        return post
