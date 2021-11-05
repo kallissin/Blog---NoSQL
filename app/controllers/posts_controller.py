@@ -25,11 +25,7 @@ def posts_controller(app: Flask):
             Post.validate_key(data)
             Post.validate_required(data)
             Post.validate_value(data)
-        except RequiredKeyError as err:
-            return jsonify(err.__dict__['message']), 400
-        except InvalidValueError as err:
-            return jsonify(err.__dict__['message']), 400
-        except InvalidKeyError as err:
+        except (RequiredKeyError, InvalidValueError, InvalidKeyError) as err:
             return jsonify(err.__dict__['message']), 400
         post = Post(**data) 
         post.generate_id()
@@ -44,9 +40,7 @@ def posts_controller(app: Flask):
             Post.validate_value(data)
         except TypeError:
             return {"error": "post not found"}, 404
-        except InvalidKeyError as err:
-            return jsonify(err.__dict__['message']), 400
-        except InvalidValueError as err:
+        except (InvalidKeyError, InvalidValueError) as err:
             return jsonify(err.__dict__['message']), 400
         new_post = Post.post_update(id, data)
         return jsonify(new_post), 200
