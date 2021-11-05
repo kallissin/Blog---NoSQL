@@ -65,7 +65,7 @@ class Post:
             "tags": self.tags,
             "content": self.content,
             "created_at": self.created_at,
-            "update_at": self.updated_at
+            "updated_at": self.updated_at
         }      
 
         _id = db.posts.insert_one(post).inserted_id
@@ -75,8 +75,11 @@ class Post:
     
     @staticmethod
     def post_update(id, data):
+        data['updated_at'] = datetime.now()
+        print(data)
         post = db.posts.find_one_and_update({"id": id}, {"$set": data})
         del post['_id']
+
         return post
     
     @staticmethod
