@@ -76,8 +76,8 @@ class Post:
     @staticmethod
     def post_update(id, data):
         data['updated_at'] = datetime.now()
-        print(data)
-        post = db.posts.find_one_and_update({"id": id}, {"$set": data})
+        db.posts.find_one_and_update({"id": id}, {"$set": data})
+        post = db.posts.find_one({"id": id})
         del post['_id']
 
         return post
