@@ -38,13 +38,12 @@ def posts_controller(app: Flask):
             data = request.get_json()
             Post.validate_key(data)
             Post.validate_value(data)
-        except (InvalidKeyError, InvalidValueError) as err:
-            return jsonify(err.__dict__['message']), 400
-        try:
-            new_post = Post.post_update(id, data)
-            return jsonify(new_post), 200
         except TypeError:
             return {"error": "post not found"}, 404
+        except (InvalidKeyError, InvalidValueError) as err:
+            return jsonify(err.__dict__['message']), 400
+        new_post = Post.post_update(id, data)
+        return jsonify(new_post), 200
 
     @app.route('/posts/<int:id>', methods=['DELETE'])
     def delete_post(id: int):
